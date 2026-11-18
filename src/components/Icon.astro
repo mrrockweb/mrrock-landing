@@ -1,0 +1,55 @@
+---
+// Lucide icons (ISC), inlined at build time.
+import building from 'lucide-static/icons/building-2.svg?raw';
+import shovel from 'lucide-static/icons/shovel.svg?raw';
+import cable from 'lucide-static/icons/cable.svg?raw';
+import compass from 'lucide-static/icons/drafting-compass.svg?raw';
+import brick from 'lucide-static/icons/brick-wall.svg?raw';
+import calendar from 'lucide-static/icons/calendar-check.svg?raw';
+import pin from 'lucide-static/icons/map-pin.svg?raw';
+import hardhat from 'lucide-static/icons/hard-hat.svg?raw';
+import languages from 'lucide-static/icons/languages.svg?raw';
+import check from 'lucide-static/icons/check.svg?raw';
+import phone from 'lucide-static/icons/phone.svg?raw';
+import mail from 'lucide-static/icons/mail.svg?raw';
+import arrow from 'lucide-static/icons/arrow-right.svg?raw';
+import menu from 'lucide-static/icons/menu.svg?raw';
+import close from 'lucide-static/icons/x.svg?raw';
+
+const icons = {
+  building,
+  site: shovel,
+  utility: cable,
+  engineering: compass,
+  materials: brick,
+  calendar,
+  pin,
+  hardhat,
+  languages,
+  check,
+  phone,
+  mail,
+  arrow,
+  menu,
+  close,
+};
+
+export type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+  size?: number;
+  stroke?: number;
+  class?: string;
+}
+
+const { name, size = 24, stroke = 1.75, class: className = '' } = Astro.props;
+const svg = icons[name]
+  .replace(/<!--[\s\S]*?-->/, '')
+  .replace(/class="[^"]*"/, `class="icon ${className}" aria-hidden="true" focusable="false"`)
+  .replace(/width="24"/, `width="${size}"`)
+  .replace(/height="24"/, `height="${size}"`)
+  .replace(/stroke-width="2"/, `stroke-width="${stroke}"`);
+---
+
+<Fragment set:html={svg} />

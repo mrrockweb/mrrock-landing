@@ -1,0 +1,902 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { contact, content, type Lang } from '../i18n/content';
+// Stock photography (Unsplash licence), generic scenes, not Mr. Rock projects. See src/assets/stock/SOURCES.md.
+import heroImg from '../assets/stock/hero-cranes-dusk.jpg';
+import aboutImg from '../assets/stock/about-concrete-frame.jpg';
+import whyImg from '../assets/stock/why-rebar-inspection.jpg';
+import ctaImg from '../assets/stock/cta-aerial-site.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = content[lang];
+---
+
+<!-- Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <Image
+    class="hero__img"
+    src={heroImg}
+    alt={t.hero.imageAlt}
+    widths={[768, 1280, 1920, 2400]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    quality={72}
+  />
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="container hero__content">
+    <h1 id="hero-title" class="hero__title">
+      {t.hero.title}
+    </h1>
+    <p class="hero__lead">{t.hero.lead}</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href={`#${t.contactSection.id}`}>
+        {t.hero.contactTitle}
+        <Icon name="arrow" size={18} stroke={2} />
+      </a>
+      <a class="btn btn--ghost-light" href={`#${t.services.id}`}>
+        {t.ui.servicesLink}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Facts strip overlapping the hero -->
+<div class="container facts-wrap">
+  <ul class="facts">
+    {t.hero.facts.map((f) => (
+      <li class="fact">
+        <span class="fact__icon">
+          <Icon name={f.icon} size={26} />
+        </span>
+        <p>
+          <strong>{f.title}</strong>
+          <span>{f.text}</span>
+        </p>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<!-- About -->
+<section id={t.about.id} class="about" aria-labelledby={`${t.about.id}-title`}>
+  <div class="container about__grid">
+    <div class="about__text">
+      <h2 id={`${t.about.id}-title`} class="section-title">
+        {t.about.title}
+      </h2>
+      <p class="about__lead">{t.about.statement}</p>
+      {t.about.paragraphs.map((p) => (
+        <p>{p}</p>
+      ))}
+    </div>
+    <figure class="about__media">
+      <Image
+        src={aboutImg}
+        alt={t.about.imageAlt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 960px) 40vw, 100vw"
+        quality={72}
+      />
+    </figure>
+  </div>
+</section>
+
+<!-- Services -->
+<section id={t.services.id} class="services" aria-labelledby={`${t.services.id}-title`}>
+  <div class="container">
+    <div class="section-head">
+      <h2 id={`${t.services.id}-title`} class="section-title">
+        {t.services.title}
+      </h2>
+      <p class="section-intro">{t.services.intro}</p>
+    </div>
+    <ul class="services__grid">
+      {t.services.items.map((s, i) => (
+        <li class:list={['service', { 'service--lead': i === 0 }]}>
+          <span class="service__icon">
+            <Icon name={s.icon} size={28} />
+          </span>
+          <h3 class="service__title">{s.title}</h3>
+          <p class="service__text">{s.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- Process -->
+<section id={t.process.id} class="process" aria-labelledby={`${t.process.id}-title`}>
+  <div class="container">
+    <div class="section-head">
+      <h2 id={`${t.process.id}-title`} class="section-title">
+        {t.process.title}
+      </h2>
+    </div>
+    <div class="steps-nav" data-steps-nav>
+      <span class="steps-nav__count tnum" aria-hidden="true">
+        <span data-steps-current>01</span> / {String(t.process.steps.length).padStart(2, '0')}
+      </span>
+      <span class="steps-nav__track" aria-hidden="true">
+        <span class="steps-nav__fill" data-steps-fill></span>
+      </span>
+      <button
+        type="button"
+        class="steps-nav__btn"
+        data-steps-prev
+        aria-label={lang === 'en' ? 'Previous step' : 'Előző lépés'}
+        disabled
+      >
+        <Icon name="arrow" size={20} class="flip" />
+      </button>
+      <button
+        type="button"
+        class="steps-nav__btn"
+        data-steps-next
+        aria-label={lang === 'en' ? 'Next step' : 'Következő lépés'}
+      >
+        <Icon name="arrow" size={20} />
+      </button>
+    </div>
+    <div class="steps-scroller" data-steps-scroller>
+      <ol class="steps">
+        {t.process.steps.map((step, i) => (
+          <li class="step">
+            <span class="step__no tnum" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="step__title">{step.title}</h3>
+            <p class="step__text">{step.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Swipeable process on tablet/mobile: counter, progress and prev/next buttons follow the scroll.
+  const scroller = document.querySelector<HTMLElement>('[data-steps-scroller]');
+  const current = document.querySelector<HTMLElement>('[data-steps-current]');
+  const fill = document.querySelector<HTMLElement>('[data-steps-fill]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-steps-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-steps-next]');
+
+  if (scroller && current && fill && prev && next) {
+    const items = Array.from(scroller.querySelectorAll<HTMLElement>('.step'));
+    const step = () => (items[1] ? items[1].offsetLeft - items[0].offsetLeft : scroller.clientWidth);
+
+    const update = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      const progress = max > 0 ? scroller.scrollLeft / max : 0;
+      const index = max > 0 && progress > 0.98 ? items.length - 1 : Math.round(scroller.scrollLeft / step());
+      current.textContent = String(index + 1).padStart(2, '0');
+      fill.style.transform = `scaleX(${(index + 1) / items.length})`;
+      prev.disabled = scroller.scrollLeft <= 2;
+      next.disabled = scroller.scrollLeft >= max - 2;
+    };
+
+    let frame = 0;
+    scroller.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', update);
+    prev.addEventListener('click', () => scroller.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => scroller.scrollBy({ left: step(), behavior: 'smooth' }));
+    update();
+  }
+</script>
+
+<!-- Why us -->
+<section id={t.why.id} class="why" aria-labelledby={`${t.why.id}-title`}>
+  <div class="container why__grid">
+    <figure class="why__media">
+      <Image
+        src={whyImg}
+        alt={t.why.imageAlt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 960px) 45vw, 100vw"
+        quality={72}
+      />
+    </figure>
+    <div>
+      <h2 id={`${t.why.id}-title`} class="section-title">
+        {t.why.title}
+      </h2>
+      <ul class="why__list">
+        {t.why.items.map((w) => (
+          <li class="why__item">
+            <span class="why__check">
+              <Icon name="check" size={18} stroke={2.5} />
+            </span>
+            <p>
+              <strong>{w.title}</strong>
+              <span>{w.text}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id={t.contactSection.id} class="cta" aria-labelledby={`${t.contactSection.id}-title`}>
+  <Image class="cta__img" src={ctaImg} alt="" widths={[768, 1280, 1920]} sizes="100vw" quality={65} />
+  <div class="cta__shade" aria-hidden="true"></div>
+  <div class="container cta__inner">
+    <div class="cta__text">
+      <h2 id={`${t.contactSection.id}-title`} class="cta__title">
+        {t.contactSection.title}
+      </h2>
+      <p>{t.contactSection.text}</p>
+    </div>
+    <ul class="cta__contacts">
+      <li>
+        <a class="contact-card" href={contact.phoneHref}>
+          <span class="contact-card__icon">
+            <Icon name="phone" size={22} />
+          </span>
+          <span>
+            <span class="contact-card__label">{t.contactSection.phoneLabel}</span>
+            <span class="contact-card__value tnum">{contact.phoneDisplay}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a class="contact-card" href={`mailto:${contact.email}`}>
+          <span class="contact-card__icon">
+            <Icon name="mail" size={22} />
+          </span>
+          <span>
+            <span class="contact-card__label">{t.contactSection.emailLabel}</span>
+            <span class="contact-card__value">{contact.email}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <div class="contact-card contact-card--static">
+          <span class="contact-card__icon">
+            <Icon name="pin" size={22} />
+          </span>
+          <span>
+            <span class="contact-card__label">{t.contactSection.addressLabel}</span>
+            <span class="contact-card__value">{contact.address}</span>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: min(92svh, 920px);
+    padding: calc(var(--header-h) + 3rem) 0 clamp(7rem, 12vw, 9rem);
+    overflow: hidden;
+    background: #14181d;
+    color: #ffffff;
+    box-sizing: border-box;
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 50%;
+    animation: hero-settle 2.4s var(--ease-out) both;
+  }
+  @keyframes hero-settle {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__img {
+      animation: none;
+    }
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(10 12 15 / 0.88) 0%, rgb(10 12 15 / 0.62) 42%, rgb(10 12 15 / 0.15) 78%),
+      linear-gradient(0deg, rgb(10 12 15 / 0.55) 0%, rgb(10 12 15 / 0) 40%),
+      linear-gradient(180deg, rgb(10 12 15 / 0.45) 0%, rgb(10 12 15 / 0) 22%);
+  }
+  .hero__content {
+    position: relative;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .hero__title {
+    max-width: 14ch;
+    color: #ffffff;
+    font-size: clamp(2.75rem, 7vw, 5.5rem);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+  .hero__lead {
+    max-width: 40rem;
+    color: rgb(255 255 255 / 0.86);
+    font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+    line-height: 1.55;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+  @media (max-width: 480px) {
+    .hero__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  /* ---------- Facts ---------- */
+  .facts-wrap {
+    position: relative;
+    z-index: 2;
+    margin-top: clamp(-5rem, -7vw, -3.5rem);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-2);
+  }
+  .fact {
+    display: flex;
+    gap: 1rem;
+    padding: 1.75rem 1.5rem;
+  }
+  .fact + .fact {
+    border-left: 1px solid var(--line);
+  }
+  .fact__icon {
+    flex: none;
+    color: var(--accent);
+  }
+  .fact p {
+    display: grid;
+    gap: 0.2rem;
+    line-height: 1.4;
+  }
+  .fact strong {
+    color: var(--ink);
+    font-size: 1.08rem;
+    font-weight: 650;
+  }
+  .fact span {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  @media (max-width: 1060px) {
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fact:nth-child(3) {
+      border-left: 0;
+    }
+    .fact:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 560px) {
+    .facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fact + .fact {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .fact {
+      padding: 1.25rem 1.25rem;
+    }
+  }
+
+  /* ---------- About ---------- */
+  .about {
+    padding-block: var(--section);
+  }
+  .about__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: center;
+  }
+  .about__text {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 40rem;
+  }
+  .about__text .section-title {
+    margin-bottom: 0.75rem;
+  }
+  .about__lead {
+    color: var(--ink);
+    font-size: clamp(1.2rem, 1.7vw, 1.35rem);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .about__media {
+    position: relative;
+    margin: 0;
+  }
+  .about__media::before {
+    content: '';
+    position: absolute;
+    inset: 2rem -1.25rem -1.25rem 2rem;
+    background: var(--accent);
+    border-radius: var(--radius);
+  }
+  .about__media :global(img) {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  @media (max-width: 960px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .about__media {
+      margin-right: 1.25rem;
+    }
+    .about__media :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* ---------- Services ---------- */
+  .services {
+    padding-block: var(--section);
+    background: var(--surface);
+  }
+  .services__grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .service {
+    grid-column: span 2;
+    display: grid;
+    align-content: start;
+    gap: 0.9rem;
+    padding: clamp(1.75rem, 3vw, 2.25rem);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition:
+      box-shadow 0.35s var(--ease-out),
+      transform 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out);
+  }
+  .service:nth-child(1),
+  .service:nth-child(2) {
+    grid-column: span 3;
+  }
+  .service:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow-2);
+    transform: translateY(-3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .service:hover {
+      transform: none;
+    }
+  }
+  .service__icon {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .service__title {
+    font-size: clamp(1.25rem, 1.8vw, 1.45rem);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .service__text {
+    color: var(--text);
+  }
+  .service--lead {
+    background: var(--dark);
+    border-color: var(--dark);
+  }
+  .service--lead .service__title {
+    color: var(--on-dark);
+  }
+  .service--lead .service__text {
+    color: var(--on-dark-muted);
+  }
+  .service--lead .service__icon {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  @media (max-width: 960px) {
+    .services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .service,
+    .service:nth-child(1),
+    .service:nth-child(2) {
+      grid-column: span 1;
+    }
+    .services__grid .service--lead {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 600px) {
+    .services__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ---------- Process ---------- */
+  .process {
+    padding-block: var(--section);
+    background: var(--dark);
+    color: var(--on-dark-muted);
+  }
+  .process .section-title {
+    color: var(--on-dark);
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--dark-line);
+  }
+  .step::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 2.5rem;
+    height: 3px;
+    background: var(--accent);
+  }
+  .step__no {
+    color: var(--accent);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .step__title {
+    color: var(--on-dark);
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+  }
+  .step__text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .steps-nav {
+    display: none;
+  }
+
+  /* Tablet and mobile: a swipeable row of step cards with a peek of the next one. */
+  @media (max-width: 1060px) {
+    .steps-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: -1rem 0 1.5rem;
+    }
+    .steps-nav__count {
+      color: var(--on-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      min-width: 4.5rem;
+    }
+    .steps-nav__track {
+      position: relative;
+      flex: 1;
+      height: 2px;
+      background: var(--dark-line);
+      overflow: hidden;
+    }
+    .steps-nav__fill {
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: scaleX(0.2);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease-out);
+    }
+    .steps-nav__btn {
+      display: grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      border: 1px solid var(--dark-line);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--on-dark);
+      cursor: pointer;
+      transition:
+        background-color 0.25s var(--ease-out),
+        border-color 0.25s var(--ease-out),
+        opacity 0.25s var(--ease-out);
+    }
+    .steps-nav__btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+    .steps-nav__btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .steps-nav__btn :global(.flip) {
+      transform: scaleX(-1);
+    }
+
+    .steps-scroller {
+      margin-inline: calc(var(--gutter) * -1);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .steps-scroller::-webkit-scrollbar {
+      display: none;
+    }
+    .steps-scroller:focus-visible {
+      outline-offset: -2px;
+    }
+    .steps {
+      display: flex;
+      gap: 0.875rem;
+      width: max-content;
+      padding-inline: var(--gutter);
+    }
+    .step {
+      flex: 0 0 min(76vw, 320px);
+      gap: 0.85rem;
+      padding: 1.75rem 1.5rem 2rem;
+      border: 1px solid var(--dark-line);
+      border-radius: var(--radius);
+      background: var(--dark-2);
+      scroll-snap-align: start;
+      box-sizing: border-box;
+    }
+    .step::before {
+      top: -1px;
+      left: 1.5rem;
+    }
+    .step__no {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .step__title {
+      font-size: 1.4rem;
+    }
+  }
+  @media (max-width: 1060px) and (prefers-reduced-motion: reduce) {
+    .steps-nav__fill {
+      transition: none;
+    }
+  }
+
+  /* ---------- Why ---------- */
+  .why {
+    padding-block: var(--section);
+  }
+  .why__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: center;
+  }
+  .why__media {
+    margin: 0;
+  }
+  .why__media :global(img) {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .why__list {
+    display: grid;
+    gap: 0;
+    margin: 2.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .why__item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .why__item:first-child {
+    border-top: 1px solid var(--line);
+  }
+  .why__check {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.1rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .why__item p {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .why__item strong {
+    color: var(--ink);
+    font-size: 1.12rem;
+    font-weight: 650;
+  }
+  @media (max-width: 960px) {
+    .why__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .why__media {
+      order: 2;
+    }
+    .why__media :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* ---------- CTA / contact ---------- */
+  .cta {
+    position: relative;
+    padding-block: var(--section);
+    overflow: hidden;
+    background: #14181d;
+    color: rgb(255 255 255 / 0.86);
+  }
+  .cta__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cta__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgb(10 12 15 / 0.9) 0%,
+      rgb(10 12 15 / 0.78) 55%,
+      rgb(10 12 15 / 0.6) 100%
+    );
+  }
+  .cta__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .cta__text {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .cta__title {
+    color: #ffffff;
+    font-size: clamp(2.25rem, 4.6vw, 3.5rem);
+  }
+  .cta__title::after {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 3px;
+    margin-top: 1.25rem;
+    background: var(--accent);
+  }
+  .cta__text p {
+    max-width: 34rem;
+    font-size: 1.2rem;
+    line-height: 1.55;
+  }
+  .cta__contacts {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.15rem 1.35rem;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.06);
+    color: #ffffff;
+    text-decoration: none;
+    transition:
+      background-color 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out);
+  }
+  a.contact-card:hover {
+    background: rgb(255 255 255 / 0.12);
+    border-color: rgb(255 255 255 / 0.35);
+  }
+  .contact-card__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .contact-card__label {
+    display: block;
+    color: rgb(255 255 255 / 0.7);
+    font-size: 0.9rem;
+  }
+  .contact-card__value {
+    display: block;
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 960px) {
+    .cta__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

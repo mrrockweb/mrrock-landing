@@ -1,0 +1,52 @@
+---
+// Mr. Rock wordmark with a faceted stone mark (designed placeholder; the client has no logo).
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<span class={`logo ${className}`}>
+  <svg class="logo__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+    <path d="M9 3h14l7 12-5 14H7L2 15z" fill="var(--accent)"></path>
+    <path
+      d="M9 3l5 12h16M14 15L7 29M14 15l11 14"
+      fill="none"
+      stroke="rgb(0 0 0 / 0.28)"
+      stroke-width="1.4"
+    ></path>
+  </svg>
+  <span class="logo__text">Mr.&nbsp;Rock</span>
+  <span class="logo__kft">Kft.</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .logo__mark {
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+  }
+  .logo__text {
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .logo__kft {
+    margin-left: -0.3rem;
+    align-self: flex-end;
+    margin-bottom: 0.1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+</style>
