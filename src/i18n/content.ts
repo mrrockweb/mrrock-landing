@@ -2,11 +2,11 @@
 
 export type Lang = 'hu' | 'en';
 
-// Placeholders until the client sends them (see CLAUDE.md Cserelista).
+// Contact details supplied by the client (2026-11-24).
 export const contact = {
-  phoneDisplay: '+36 XX XXX XXXX',
-  phoneHref: 'tel:+36000000000',
-  email: 'info@mrrock.hu',
+  phoneDisplay: '+36 30 630 6529',
+  phoneHref: 'tel:+36306306529',
+  email: 'info@mrrock.net',
   address: '1083 Budapest, Jázmin utca 16.',
 };
 

@@ -16,4 +16,4 @@ User-agent: Google-Extended
 User-agent: CCBot
 Disallow: /
 
-Sitemap: https://mrrock.hu/sitemap-index.xml
+Sitemap: https://mrrock.net/sitemap-index.xml

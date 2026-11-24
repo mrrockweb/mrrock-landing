@@ -4,5 +4,5 @@
 
 ## Fő oldalak
 
-- [Főoldal](https://mrrock.hu/): szolgáltatások, munkafolyamat, cégadatok és kapcsolat (magyar)
-- [Home (English)](https://mrrock.hu/en/): services, process, company details and contact (English)
+- [Főoldal](https://mrrock.net/): szolgáltatások, munkafolyamat, cégadatok és kapcsolat (magyar)
+- [Home (English)](https://mrrock.net/en/): services, process, company details and contact (English)

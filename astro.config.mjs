@@ -6,8 +6,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Placeholder until the final domain is known (see CLAUDE.md Cserelista).
-  site: 'https://mrrock.hu',
+  site: 'https://mrrock.net',
   trailingSlash: 'always',
   build: { format: 'directory' },
   i18n: {

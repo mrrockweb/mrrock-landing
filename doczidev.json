@@ -1,6 +1,6 @@
 {
   "name": "Mr. Rock Kft.",
-  "site": "https://mrrock.hu",
+  "site": "https://mrrock.net",
   "type": "landing",
   "stack": "astro+tailwind",
   "hosting": "cloudflare-pages",

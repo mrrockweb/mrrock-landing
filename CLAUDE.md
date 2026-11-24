@@ -10,9 +10,9 @@ Egyoldalas, kétnyelvű (HU alapértelmezett a `/` alatt, EN a `/en/` alatt) bem
 
 ## Cserelista
 
-- [ ] Végleges domain (`astro.config.mjs` `site`, `doczidev.json`, `public/robots.txt`, `public/llms.txt`, `public/.well-known/security.txt`). Most: `https://mrrock.hu` placeholder.
-- [ ] Telefonszám (az ügyfél később küldi): `src/i18n/content.ts` → `contact.phoneDisplay` / `phoneHref` (most `+36 XX XXX XXXX`).
-- [ ] E-mail cím: `src/i18n/content.ts` → `contact.email` és `public/.well-known/security.txt` (most `info@mrrock.hu` placeholder).
+- [x] Domain: `https://mrrock.net` (`astro.config.mjs` `site`, `doczidev.json`, `public/robots.txt`, `public/llms.txt`, `public/.well-known/security.txt`).
+- [x] Telefonszám: +36 30 630 6529 (`src/i18n/content.ts` → `contact`).
+- [x] E-mail: info@mrrock.net (`src/i18n/content.ts` → `contact`, `public/.well-known/security.txt`).
 - [x] Logó: az ügyfélnek nincs; a tervezett logó (narancs faceted kő-jel + MR. ROCK felirat) a `src/components/Logo.astro`-ban és a `public/logo.svg`-ben van. Ha az ügyfél ad sajátot, ezt cseréljük.
 - [ ] Favicon szett: a `favicon.svg` kész (a kő-jel). Hiányzik: `favicon.ico`, `favicon-32x32.png`, `apple-touch-icon.png`, 192/512 ikonok + `site.webmanifest`.
 - [x] OG kép: `public/og/default.jpg` (1200×630, a hero-ból). Domain/kép csere után újragenerálandó.
